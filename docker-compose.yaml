@@ -1,0 +1,10 @@
+services:
+  maps-server:
+    build:
+      context: ../assembly-mcp-server
+      dockerfile: Dockerfile
+    ports:
+      - '3005:3005'
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
