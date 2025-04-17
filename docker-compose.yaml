@@ -1,5 +1,5 @@
 services:
-  maps-server:
+  assembly-server:
     build:
       context: ../assembly-mcp-server
       dockerfile: Dockerfile
