@@ -92,7 +92,7 @@ export class AssemblyServer {
       return obj && typeof obj[methodName] === 'function';
     }
 
-    this.app.get("/sse", async (req, res) => {
+    this.app.get("sse", async (req, res) => {
       const transport = new SSEServerTransport('/messages', res);
       this.transports[transport.sessionId] = transport;
       res.on("close", () => {
@@ -145,7 +145,7 @@ export class AssemblyServer {
       }, 10000);
     });
 
-    this.app.post("/messages", async (req, res) => {
+    this.app.post("messages", async (req, res) => {
       const headers = req.headers;
       const sessionId = req.query.sessionId as string;
       if (!sessionId) {
