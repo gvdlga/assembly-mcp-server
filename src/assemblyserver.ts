@@ -9,12 +9,15 @@ import { McpFunction } from "./functions/function.js";
 import { TranscribeFunction } from "./functions/transcribe.function.js";
 import { TranscriptionStatusFunction } from "./functions/transcriptionstatus.function.js";
 import { DeleteTranscriptionFunction } from "./functions/deletetranscription.function.js";
+import { ListTranscriptionsFunction } from "./functions/listtranscripts.function.js";
+import { DeleteAllTranscriptionsFunction } from "./functions/deletealltranscriptions.function.js";
 import { ApiKeyManager } from "./utils/apikeymanager.js";
 import 'dotenv/config';
 
 export class AssemblyServer {
   private mcpFunctions: Array<McpFunction> = [
-    new TranscribeFunction(), new TranscriptionStatusFunction(), new DeleteTranscriptionFunction()
+    new TranscribeFunction(), new TranscriptionStatusFunction(), new DeleteTranscriptionFunction(), 
+    new ListTranscriptionsFunction(), new DeleteAllTranscriptionsFunction()
   ];
   private server: McpServer;
   private app = express();
