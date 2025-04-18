@@ -74,7 +74,7 @@ export class AssemblyServer {
     );
 
     // Add a simple root route handler
-    this.app.get("/assembly/", (req, res) => {
+    this.app.get("/assembly", (req, res) => {
       res.json({
         name: this.serverName,
         version: this.serverVersion,
