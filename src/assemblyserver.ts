@@ -77,7 +77,7 @@ export class AssemblyServer {
     );
 
     // Add a simple root route handler
-    this.app.get("/assembly/", (req, res) => {
+    this.app.get("/", (req, res) => {
       res.json({
         name: this.serverName,
         version: this.serverVersion,
@@ -95,8 +95,12 @@ export class AssemblyServer {
       return obj && typeof obj[methodName] === 'function';
     }
 
-    this.app.get("/assembly/sse", async (req, res) => {
-      const transport = new SSEServerTransport('/assembly/messages', res);
+    this.app.get("/sse", async (req, res) => {
+      let mount = "";
+      if (req.headers.origin) {
+        mount = req.headers.origin;
+      }
+      const transport = new SSEServerTransport(mount + '/messages', res);
       this.transports[transport.sessionId] = transport;
       res.on("close", () => {
         delete this.transports[transport.sessionId];
@@ -148,7 +152,7 @@ export class AssemblyServer {
       }, 10000);
     });
 
-    this.app.post("/assembly/messages", async (req, res) => {
+    this.app.post("/messages", async (req, res) => {
       const headers = req.headers;
       const sessionId = req.query.sessionId as string;
       if (!sessionId) {
