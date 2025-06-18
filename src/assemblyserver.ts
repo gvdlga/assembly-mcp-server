@@ -165,6 +165,12 @@ export class AssemblyServer {
         if (headers.authorization && headers.authorization.startsWith("Bearer")) {
           const apiKey = headers.authorization.substring(7, headers.authorization.length);
           ApiKeyManager.setApiKey(sessionId, apiKey.trim());
+        } else {
+          if (headers.authorization) {
+            console.warn(`Authorization header malformed for sessionId: ${sessionId}: ${headers.authorization}`);
+          } else {
+            console.warn(`Authorization header missing for sessionId: ${sessionId}`);
+          }
         }
       }
       if (transport) {
