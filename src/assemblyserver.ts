@@ -162,6 +162,7 @@ export class AssemblyServer {
       }
       const transport = this.transports[sessionId];
       if (headers) {
+        console.log(`Received message for sessionId: ${sessionId} with headers:`, headers);
         if (headers.authorization && headers.authorization.startsWith("Bearer")) {
           const apiKey = headers.authorization.substring(7, headers.authorization.length);
           ApiKeyManager.setApiKey(sessionId, apiKey.trim());
