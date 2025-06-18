@@ -38,7 +38,7 @@ export class TranscribeFunction implements McpFunction {
             if (sessionId) {
                 apiKey = ApiKeyManager.getApiKey(sessionId);
             } else {
-                apiKey = process.env.NS_API_KEY;
+                apiKey = process.env.ASSEMBLY_API_KEY;
             }
             if (!apiKey || apiKey.trim() === "") {
                 throw new Error("No ASSEMBLY_API_KEY provided. Cannot authorize Assembly API.")

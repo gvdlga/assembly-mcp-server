@@ -164,7 +164,7 @@ export class AssemblyServer {
       if (headers) {
         if (headers.authorization && headers.authorization.startsWith("Bearer")) {
           const apiKey = headers.authorization.substring(7, headers.authorization.length);
-          ApiKeyManager.setApiKey(sessionId, apiKey);
+          ApiKeyManager.setApiKey(sessionId, apiKey.trim());
         }
       }
       if (transport) {
