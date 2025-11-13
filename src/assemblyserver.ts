@@ -160,20 +160,8 @@ export class AssemblyServer {
         res.status(400).json({ error: 'MCP Error: sessionId is required' });
         return;
       }
+      await ApiKeyManager.loadAuthData(req);
       const transport = this.transports[sessionId];
-      if (headers) {
-        console.log(`Received message for sessionId: ${sessionId} with headers:`, headers);
-        if (headers.authorization && headers.authorization.startsWith("Bearer")) {
-          const apiKey = headers.authorization.substring(7, headers.authorization.length);
-          ApiKeyManager.setApiKey(sessionId, apiKey.trim());
-        } else {
-          if (headers.authorization) {
-            console.warn(`Authorization header malformed for sessionId: ${sessionId}: ${headers.authorization}`);
-          } else {
-            console.warn(`Authorization header missing for sessionId: ${sessionId}`);
-          }
-        }
-      }
       if (transport) {
         await transport.handlePostMessage(req, res);
       } else {

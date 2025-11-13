@@ -1,8 +1,7 @@
 import { ApiKeyManager } from "../utils/apikeymanager.js";
 import { McpFunction } from "./function.js";
-import { z } from "zod";
 import { ResponseFormatter } from '../utils/ResponseFormatter.js';
-import { AssemblyAI, TranscriptParams } from "assemblyai";
+import { AssemblyAI } from "assemblyai";
 
 export class ListTranscriptionsFunction implements McpFunction {
 
