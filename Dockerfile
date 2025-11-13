@@ -19,7 +19,7 @@ RUN npm run build
 ENV NODE_ENV=production
 
 # Expose port
-EXPOSE 3004
+EXPOSE 3005
 
 # Run the server
 CMD ["node", "dist/index.js"]
