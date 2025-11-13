@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# Stop het script onmiddellijk als een commando mislukt
+set -e
+
+# --- 1. Checks ---
+
+# Controleer of een versienummer is opgegeven
+if [[ -z "$1" ]]; then
+  echo "Error: Geef een versienummer op (bijv. 1.0.0)."
+  echo "Gebruik: $0 <versie>"
+  exit 1
+fi
+
+VERSION=$1
+
+# Controleer of de GitHub CLI (gh) is geïnstalleerd
+if ! command -v gh &> /dev/null; then
+    echo "Error: 'gh' (GitHub CLI) is niet gevonden."
+    echo "Installeer dit AUB eerst: https://cli.github.com/"
+    echo "Je moet ook ingelogd zijn (gh auth login)."
+    exit 1
+fi
+
+# Controleer of de TypeScript Compiler (tsc) is geïnstalleerd
+if ! command -v tsc &> /dev/null; then
+    echo "Error: 'tsc' (TypeScript Compiler) is niet gevonden."
+    echo "Installeer dit AUB eerst (bijv. 'npm install -g typescript')."
+    exit 1
+fi
+
+# --- 2. TypeScript Compilatie ---
+
+echo "TypeScript compiler (tsc) uitvoeren..."
+tsc
+echo "TypeScript compilatie voltooid."
+
+# --- 3. Git Status Check ---
+
+echo "Controleren op lokale wijzigingen..."
+if [[ -n $(git status --porcelain) ]]; then
+  echo "Error: Er zijn niet-ingediende wijzigingen."
+  echo "Commit of stash je wijzigingen eerst voordat je een release maakt."
+  exit 1
+else
+  echo "Git repository is schoon. Doorgaan..."
+fi
+
+# --- 4. Git Tag & Push ---
+# We maken de release op basis van de *huidige* commit.
+
+echo "Zorg dat je de laatste code hebt (git pull)..."
+git pull
+
+echo "Git tag $VERSION aanmaken..."
+git tag "$VERSION"
+
+echo "Git tag $VERSION pushen naar remote..."
+git push origin "$VERSION"
+
+# --- 5. Docker Build & Push ---
+
+echo "Docker image bouwen: ghcr.io/gvdlga/assembly-mcp-server:$VERSION"
+docker build --platform linux/amd64 -t "ghcr.io/gvdlga/assembly-mcp-server:$VERSION" .
+
+echo "Docker image pushen..."
+docker push "ghcr.io/gvdlga/assembly-mcp-server:$VERSION"
+# --- 6. GitHub Release ---
+
+echo "GitHub release $VERSION aanmaken..."
+# --generate-notes maakt automatisch release notes van alle commits
+# sinds de vorige tag.
+gh release create "$VERSION" \
+    --title "$VERSION" \
+    --generate-notes
+
+echo "Voltooid!"
+echo "Docker image is gepusht en GitHub release $VERSION is aangemaakt."
