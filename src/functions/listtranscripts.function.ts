@@ -1,13 +1,11 @@
-import { ApiKeyManager } from "../utils/apikeymanager.js";
-import { McpFunction } from "./function.js";
-import { ResponseFormatter } from '../utils/ResponseFormatter.js';
+import { ApiKeyManager, McpFunction, ResponseFormatter } from '@geniusagents/mcp';
 import { AssemblyAI } from "assemblyai";
 
 export class ListTranscriptionsFunction implements McpFunction {
 
     public name: string = "assembly_list_transcriptions";
 
-    public description: string = "Get a list of all transcriptions." ;
+    public description: string = "Get a list of all transcriptions.";
 
     public inputschema = {
         type: "object",
@@ -22,7 +20,7 @@ export class ListTranscriptionsFunction implements McpFunction {
             const sessionId = extra.sessionId;
             let apiKey: string | undefined;
             if (sessionId) {
-                apiKey = ApiKeyManager.getApiKey(sessionId);
+                apiKey = ApiKeyManager.getInstance().getApiKey(sessionId);
             } else {
                 apiKey = process.env.ASSEMBLY_API_KEY;
             }
@@ -32,12 +30,12 @@ export class ListTranscriptionsFunction implements McpFunction {
             const client = new AssemblyAI({
                 apiKey: apiKey,
             });
-              
+
             const { transcriptionId } = args;
-            const transcriptList = await client.transcripts.list({limit: 200});
+            const transcriptList = await client.transcripts.list({ limit: 200 });
             return ResponseFormatter.formatSuccess(transcriptList.transcripts);
         } catch (error) {
             return ResponseFormatter.formatError(error);
         }
     }
-  }
+}

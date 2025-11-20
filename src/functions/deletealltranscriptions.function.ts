@@ -1,19 +1,17 @@
-import { ApiKeyManager } from "../utils/apikeymanager.js";
-import { McpFunction } from "./function.js";
-import { ResponseFormatter } from '../utils/ResponseFormatter.js';
+import { ApiKeyManager, McpFunction, ResponseFormatter } from '@geniusagents/mcp';
 import { AssemblyAI } from "assemblyai";
 
 export class DeleteAllTranscriptionsFunction implements McpFunction {
 
     public name: string = "assembly_delete_all_transcriptions";
 
-    public description: string = "Delete all transcriptions from the server." ;
+    public description: string = "Delete all transcriptions from the server.";
 
     public inputschema = {
         type: "object",
         properties: {
         }
-      };
+    };
 
     public zschema = {};
 
@@ -22,7 +20,7 @@ export class DeleteAllTranscriptionsFunction implements McpFunction {
             const sessionId = extra.sessionId;
             let apiKey: string | undefined;
             if (sessionId) {
-                apiKey = ApiKeyManager.getApiKey(sessionId);
+                apiKey = ApiKeyManager.getInstance().getApiKey(sessionId);
             } else {
                 apiKey = process.env.ASSEMBLY_API_KEY;
             }
@@ -33,7 +31,7 @@ export class DeleteAllTranscriptionsFunction implements McpFunction {
                 apiKey: apiKey,
             });
 
-            const transcriptList = await client.transcripts.list({limit: 200});
+            const transcriptList = await client.transcripts.list({ limit: 200 });
             const transcriptions = transcriptList.transcripts;
             const deleted = [];
             for (const transcript of transcriptions) {
@@ -51,4 +49,4 @@ export class DeleteAllTranscriptionsFunction implements McpFunction {
             return ResponseFormatter.formatError(error);
         }
     }
-  }
+}

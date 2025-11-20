@@ -18,6 +18,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@geniusagents/mcp": "^0.2.0",
     "@modelcontextprotocol/sdk": "^1.7.0",
     "assemblyai": "^4.9.0",
     "cors": "^2.8.5",

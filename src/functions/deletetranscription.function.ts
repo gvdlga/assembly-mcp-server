@@ -1,34 +1,32 @@
-import { ApiKeyManager } from "../utils/apikeymanager.js";
-import { McpFunction } from "./function.js";
+import { ApiKeyManager, McpFunction, ResponseFormatter } from '@geniusagents/mcp';
 import { z } from "zod";
-import { ResponseFormatter } from '../utils/ResponseFormatter.js';
 import { AssemblyAI } from "assemblyai";
 
 export class DeleteTranscriptionFunction implements McpFunction {
 
     public name: string = "assembly_delete_transcription";
 
-    public description: string = "Delete a transcription from the server." ;
+    public description: string = "Delete a transcription from the server.";
 
     public inputschema = {
         type: "object",
         properties: {
-          transcriptionId: {
-            type: "string",
-            description: "The id of the transcription that you want to delete."
-          }
+            transcriptionId: {
+                type: "string",
+                description: "The id of the transcription that you want to delete."
+            }
         },
         required: ["transcriptionId"]
-      };
+    };
 
-    public zschema = {transcriptionId: z.string()};
+    public zschema = { transcriptionId: z.string() };
 
     public async handleExecution(args: any, extra: any) {
         try {
             const sessionId = extra.sessionId;
             let apiKey: string | undefined;
             if (sessionId) {
-                apiKey = ApiKeyManager.getApiKey(sessionId);
+                apiKey = ApiKeyManager.getInstance().getApiKey(sessionId);
             } else {
                 apiKey = process.env.ASSEMBLY_API_KEY;
             }
@@ -38,7 +36,7 @@ export class DeleteTranscriptionFunction implements McpFunction {
             const client = new AssemblyAI({
                 apiKey: apiKey,
             });
-              
+
             if (!args || !args.transcriptionId) {
                 throw new Error("The transcriptionId parameter should be provided.");
             }
@@ -58,4 +56,4 @@ export class DeleteTranscriptionFunction implements McpFunction {
             return ResponseFormatter.formatError(error);
         }
     }
-  }
+}

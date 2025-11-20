@@ -1,42 +1,40 @@
-import { ApiKeyManager } from "../utils/apikeymanager.js";
-import { McpFunction } from "./function.js";
+import { ApiKeyManager, McpFunction, ResponseFormatter } from '@geniusagents/mcp';
 import { z } from "zod";
-import { ResponseFormatter } from '../utils/ResponseFormatter.js';
 import { AssemblyAI } from "assemblyai";
 
 export class TranscribeFunction implements McpFunction {
 
     public name: string = "assembly_transcribe";
 
-    public description: string = "Transcribe an audio file to text." ;
+    public description: string = "Transcribe an audio file to text.";
 
     public inputschema = {
         type: "object",
         properties: {
-          audio: {
-            type: "string",
-            description: "The filename or file url of the audio file."
-          },
-          speakerLabels: {
-            type: "boolean",
-            description: "Set speakerLabels to true when you want to identify each speaker in an audiofile."
-          },
-          languageCode: {
-            type: "string",
-            description: "Two letter code for the language of the audio file."
-          }
+            audio: {
+                type: "string",
+                description: "The filename or file url of the audio file."
+            },
+            speakerLabels: {
+                type: "boolean",
+                description: "Set speakerLabels to true when you want to identify each speaker in an audiofile."
+            },
+            languageCode: {
+                type: "string",
+                description: "Two letter code for the language of the audio file."
+            }
         },
         required: ["address"]
-      };
+    };
 
-    public zschema = {audio: z.string(), speakerLabels: z.boolean().optional(), languageCode: z.string().optional()};
+    public zschema = { audio: z.string(), speakerLabels: z.boolean().optional(), languageCode: z.string().optional() };
 
     public async handleExecution(args: any, extra: any) {
         try {
             const sessionId = extra.sessionId;
             let apiKey: string | undefined;
             if (sessionId) {
-                apiKey = ApiKeyManager.getApiKey(sessionId);
+                apiKey = ApiKeyManager.getInstance().getApiKey(sessionId);
             } else {
                 apiKey = process.env.ASSEMBLY_API_KEY;
             }
@@ -46,7 +44,7 @@ export class TranscribeFunction implements McpFunction {
             const client = new AssemblyAI({
                 apiKey: apiKey,
             });
-              
+
             if (!args || !args.audio) {
                 throw new Error("The audio parameter should be provided and should indicate the location of the audio file.");
             }
@@ -55,9 +53,9 @@ export class TranscribeFunction implements McpFunction {
                 audio: audio,
                 speech_model: "best",
                 speaker_labels: (speakerLabels === true),
-                language_code: (languageCode?languageCode:"nl"),
+                language_code: (languageCode ? languageCode : "nl"),
             }
-              
+
             const transcript = await client.transcripts.submit(data);
             if (transcript.status === "error") {
                 throw new Error(`Assembly transcription failed: ${transcript.error}`);
@@ -73,4 +71,4 @@ export class TranscribeFunction implements McpFunction {
             return ResponseFormatter.formatError(error);
         }
     }
-  }
+}

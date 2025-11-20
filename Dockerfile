@@ -13,7 +13,6 @@ COPY ./src ./src
 
 # Build TypeScript to JavaScript
 RUN npm install
-RUN npm run build
 
 # Set environment variables
 ENV NODE_ENV=production
